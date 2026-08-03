@@ -18,4 +18,3 @@ Most Hack Clubbers who own a 3D printer have never opened it up. It arrived asse
 <br>
 
 # [Read the Full Spec]
-,fdocs/CONTRIBUTING.md)
