@@ -6,10 +6,10 @@ ATTN If you use an outdated website please do ***NOT*** put sensitive info in!!!
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| 6.0.x   | TBD                |
+| 5.B.x   | TBD                |
+| 5.A.x   | TBD                |
+| 5.0.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
