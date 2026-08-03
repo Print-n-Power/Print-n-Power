@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Printing Power — a Hack Club YSWS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#12181c;
+    --paper:#f5efe1;
+    --paper-dim:#eae1cb;
+    --paper-line:#ddd2b3;
+    --blueprint:#0e2a41;
+    --blueprint-deep:#0a1f30;
+    --blueprint-line:#3f7ea3;
+    --blueprint-line-dim:#1e4763;
+    --nozzle:#ff5a34;
+    --nozzle-dark:#d4431f;
+    --teal:#28c2b3;
+    --watt:#f3b73f;
+    --max:1180px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.55;
+  }
+
+  h1,h2,h3{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.01em;
+    margin:0;
+    line-height:0.95;
+  }
+
+  .mono{
+    font-family:'JetBrains Mono',monospace;
+  }
+
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+
+  .wrap{
+    max-width:var(--max);
+    margin:0 auto;
+    padding:0 28px;
+  }
+
+  /* ---------- focus ---------- */
+  a:focus-visible, button:focus-visible, summary:focus-visible{
+    outline:3px solid var(--nozzle);
+    outline-offset:3px;
+  }
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(245,239,225,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--paper-line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 0;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    text-decoration:none;
+    color:var(--ink);
+  }
+  .brand svg{width:26px;height:26px;flex-shrink:0;}
+  .brand-text{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:800;
+    font-size:1.25rem;
+    letter-spacing:0.02em;
+    text-transform:uppercase;
+  }
+  nav.links{
+    display:flex; gap:28px; align-items:center;
+  }
+  nav.links a{
+    text-decoration:none;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:var(--ink);
+    opacity:0.75;
+    transition:opacity .15s ease;
+  }
+  nav.links a:hover{opacity:1;}
+  .nav-cta{
+    background:var(--nozzle);
+    color:var(--paper);
+    padding:9px 18px;
+    border-radius:3px;
+    font-weight:700;
+    opacity:1 !important;
+  }
+  .nav-cta:hover{background:var(--nozzle-dark);}
+  .burger{display:none;}
+
+  @media (max-width:760px){
+    nav.links{display:none;}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:var(--blueprint);
+    color:var(--paper);
+    position:relative;
+    overflow:hidden;
+    background-image:
+      linear-gradient(var(--blueprint-line-dim) 1px, transparent 1px),
+      linear-gradient(90deg, var(--blueprint-line-dim) 1px, transparent 1px);
+    background-size:34px 34px;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:radial-gradient(ellipse 70% 55% at 30% 20%, rgba(255,90,52,0.16), transparent 60%);
+    pointer-events:none;
+  }
+  .hero-inner{
+    position:relative;
+    max-width:760px;
+    padding:96px 0 84px;
+  }
+  @media (max-width:900px){
+    .hero-inner{padding:64px 0 52px;}
+  }
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--watt);
+    border:1px solid var(--blueprint-line);
+    padding:6px 12px;
+    border-radius:999px;
+    margin-bottom:22px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--nozzle);flex-shrink:0;}
+
+  .hero h1{
+    font-size:clamp(2.4rem, 5.4vw, 4.1rem);
+    color:var(--paper);
+  }
+  .hero h1 span{color:var(--nozzle);}
+
+  .hero p.lede{
+    margin-top:22px;
+    max-width:52ch;
+    font-size:1.08rem;
+    color:#d6e4ec;
+  }
+
+  .cta-row{
+    display:flex; gap:14px; flex-wrap:wrap;
+    margin-top:32px;
+  }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.85rem;
+    font-weight:700;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    text-decoration:none;
+    padding:14px 24px;
+    border-radius:3px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform .12s ease, background .15s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{background:var(--nozzle); color:var(--blueprint-deep);}
+  .btn-primary:hover{background:#ff7454;}
+  .btn-ghost{border-color:var(--blueprint-line); color:var(--paper);}
+  .btn-ghost:hover{background:rgba(255,255,255,0.06);}
+
+  /* ---------- section basics ---------- */
+  section{padding:84px 0;}
+  .section-head{
+    max-width:640px;
+    margin-bottom:44px;
+  }
+  .kicker{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--nozzle-dark);
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:14px;
+  }
+  .kicker::before{
+    content:"";
+    width:22px; height:2px;
+    background:var(--nozzle-dark);
+  }
+  .section-head h2{font-size:clamp(1.8rem,3.4vw,2.6rem);}
+  .section-head p{margin-top:14px; font-size:1.02rem; color:#3c3630; max-width:56ch;}
+
+  /* ---------- context ---------- */
+  .context{
+    background:var(--paper);
+    border-top:1px solid var(--paper-line);
+    border-bottom:1px solid var(--paper-line);
+  }
+  .context .wrap{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:52px;
+    align-items:start;
+  }
+  @media (max-width:820px){.context .wrap{grid-template-columns:1fr;}}
+  .context blockquote{
+    margin:0;
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:700;
+    font-size:clamp(1.5rem,2.7vw,2.1rem);
+    text-transform:none;
+    line-height:1.15;
+    color:var(--blueprint);
+  }
+  .context .fine{margin-top:18px; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:#7a6f5c;}
+
+  /* ---------- paths ---------- */
+  .paths{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+  }
+  @media (max-width:820px){.paths{grid-template-columns:1fr;}}
+  .path-card{
+    background:var(--paper);
+    border:1.5px solid var(--ink);
+    border-radius:6px;
+    padding:32px;
+    position:relative;
+    box-shadow:6px 6px 0 var(--paper-line);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .path-card:hover{transform:translate(-3px,-3px); box-shadow:9px 9px 0 var(--nozzle);}
+  .path-card .num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    color:var(--nozzle-dark);
+    letter-spacing:0.06em;
+  }
+  .path-card h3{
+    font-size:1.7rem;
+    margin-top:10px;
+    margin-bottom:14px;
+  }
+  .path-card p{color:#3c3630; margin:0 0 16px;}
+  .path-card ul{
+    margin:0; padding:0; list-style:none;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .path-card li{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.82rem;
+    color:var(--blueprint);
+    display:flex; gap:8px; align-items:flex-start;
+  }
+  .path-card li::before{content:"▸"; color:var(--nozzle); flex-shrink:0;}
+
+  /* ---------- steps ---------- */
+  .steps{
+    background:var(--blueprint-deep);
+    color:var(--paper);
+  }
+  .steps .section-head p{color:#b9cdd9;}
+  .steps .kicker{color:var(--watt);}
+  .steps .kicker::before{background:var(--watt);}
+  .step-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:0;
+    border-top:1px solid var(--blueprint-line-dim);
+  }
+  @media (max-width:900px){
+    .step-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:560px){
+    .step-grid{grid-template-columns:1fr;}
+  }
+  .step{
+    padding:28px 22px;
+    border-right:1px solid var(--blueprint-line-dim);
+    border-bottom:1px solid var(--blueprint-line-dim);
+  }
+  .step-grid .step:last-child{border-right:none;}
+  .step .step-num{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-size:2.4rem;
+    font-weight:800;
+    color:var(--nozzle);
+  }
+  .step h3{
+    font-size:1.15rem;
+    margin-top:6px;
+    margin-bottom:10px;
+    color:var(--paper);
+  }
+  .step p{
+    font-size:0.9rem;
+    color:#a9c0cf;
+    margin:0;
+  }
+
+  /* ---------- redeem ---------- */
+  .redeem{
+    background:var(--paper-dim);
+  }
+  .catalog{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--ink);
+    border:1px solid var(--ink);
+  }
+  @media (max-width:900px){.catalog{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:520px){.catalog{grid-template-columns:1fr;}}
+  .item{
+    background:var(--paper);
+    padding:26px 22px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    min-height:170px;
+  }
+  .item .icon{width:34px;height:34px;color:var(--nozzle-dark);}
+  .item h4{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:700;
+    font-size:1.15rem;
+    text-transform:uppercase;
+    margin:0;
+  }
+  .item p{margin:0; font-size:0.85rem; color:#54493a;}
+  .item .price{
+    margin-top:auto;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.85rem;
+    color:var(--blueprint);
+    font-weight:700;
+  }
+  .price .bolt{color:var(--watt);}
+  .redeem .note{
+    margin-top:18px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    color:#7a6f5c;
+  }
+
+  /* ---------- faq ---------- */
+  .faq-list{
+    display:flex; flex-direction:column;
+    border-top:1px solid var(--paper-line);
+    max-width:820px;
+  }
+  details{
+    border-bottom:1px solid var(--paper-line);
+    padding:20px 0;
+  }
+  summary{
+    cursor:pointer;
+    list-style:none;
+    display:flex; align-items:center; justify-content:space-between;
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:700;
+    font-size:1.15rem;
+    text-transform:none;
+    color:var(--ink);
+  }
+  summary::-webkit-details-marker{display:none;}
+  summary::after{
+    content:"+";
+    font-family:'JetBrains Mono',monospace;
+    font-size:1.4rem;
+    color:var(--nozzle);
+    margin-left:16px;
+    flex-shrink:0;
+  }
+  details[open] summary::after{content:"–";}
+  details p{
+    margin:14px 0 0;
+    color:#3c3630;
+    font-size:0.95rem;
+    max-width:64ch;
+  }
+
+  /* ---------- final cta ---------- */
+  .final-cta{
+    background:var(--nozzle);
+    color:var(--blueprint-deep);
+    text-align:center;
+  }
+  .final-cta h2{
+    font-size:clamp(2rem,5vw,3.4rem);
+    color:var(--blueprint-deep);
+  }
+  .final-cta p{
+    margin:18px auto 0;
+    max-width:50ch;
+    font-size:1.05rem;
+    color:#3a1c0e;
+  }
+  .final-cta .cta-row{justify-content:center;}
+  .final-cta .btn-primary{background:var(--blueprint-deep); color:var(--paper);}
+  .final-cta .btn-primary:hover{background:#123452;}
+  .final-cta .btn-ghost{border-color:var(--blueprint-deep); color:var(--blueprint-deep);}
+  .final-cta .btn-ghost:hover{background:rgba(14,42,65,0.08);}
+
+  /* ---------- shop modal ---------- */
+  .shop-overlay{
+    position:fixed; inset:0; z-index:200;
+    background:rgba(10,31,48,0.86);
+    display:flex; align-items:flex-start; justify-content:center;
+    padding:60px 20px;
+    opacity:0; visibility:hidden; pointer-events:none;
+    transition:opacity .18s ease;
+  }
+  .shop-overlay:target{opacity:1; visibility:visible; pointer-events:auto;}
+  .shop-panel{
+    background:var(--paper);
+    border-radius:8px;
+    width:100%; max-width:760px;
+    max-height:85vh;
+    overflow-y:auto;
+    padding:38px 38px 30px;
+    position:relative;
+    box-shadow:0 24px 70px rgba(0,0,0,0.45);
+  }
+  .shop-close{
+    position:absolute; top:16px; right:16px;
+    width:34px; height:34px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%;
+    background:var(--paper-dim);
+    color:var(--ink);
+    text-decoration:none;
+    font-family:'JetBrains Mono',monospace;
+    font-size:1.1rem;
+    line-height:1;
+    transition:background .15s ease;
+  }
+  .shop-close:hover{background:var(--nozzle); color:var(--paper);}
+  .shop-panel .kicker{color:var(--teal);}
+  .shop-panel .kicker::before{background:var(--teal);}
+  .shop-panel h2{font-size:clamp(1.6rem,3.4vw,2.1rem); max-width:80%;}
+  .shop-panel p.lede-sm{
+    margin-top:12px; margin-bottom:28px;
+    font-size:0.95rem; color:#3c3630; max-width:56ch;
+  }
+  .grant-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  @media (max-width:560px){.grant-grid{grid-template-columns:1fr;}}
+  .grant-item{
+    border:1.5px solid var(--ink);
+    border-radius:6px;
+    padding:18px;
+    display:flex; flex-direction:column; gap:8px;
+    background:var(--paper);
+  }
+  .grant-item .grant-tag{
+    align-self:flex-start;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.68rem;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    background:var(--teal);
+    color:var(--blueprint-deep);
+    padding:3px 9px;
+    border-radius:999px;
+    font-weight:700;
+  }
+  .grant-item h4{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:700;
+    font-size:1.1rem;
+    text-transform:uppercase;
+    margin:0;
+  }
+  .grant-item p{margin:0; font-size:0.83rem; color:#54493a;}
+  .grant-item a.claim{
+    margin-top:auto;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+    font-weight:700;
+    text-transform:uppercase;
+    color:var(--nozzle-dark);
+    text-decoration:none;
+  }
+  .grant-item a.claim:hover{text-decoration:underline;}
+  .shop-panel .note{
+    margin-top:22px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    color:#7a6f5c;
+  }
+
+  /* ---------- order button ---------- */
+  .order-btn{
+    margin-top:8px;
+    align-self:flex-start;
+    background:var(--blueprint);
+    color:var(--paper);
+    border:none;
+    padding:8px 14px;
+    border-radius:3px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    font-weight:700;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .order-btn:hover{background:var(--nozzle);}
+
+  /* ---------- generic JS modal (order / admin) ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; z-index:300;
+    background:rgba(10,31,48,0.86);
+    display:flex; align-items:flex-start; justify-content:center;
+    padding:60px 20px;
+    opacity:0; visibility:hidden; pointer-events:none;
+    transition:opacity .18s ease;
+  }
+  .modal-overlay.open{opacity:1; visibility:visible; pointer-events:auto;}
+  .modal-panel{
+    background:var(--paper);
+    border-radius:8px;
+    width:100%; max-width:520px;
+    max-height:85vh;
+    overflow-y:auto;
+    padding:38px 38px 30px;
+    position:relative;
+    box-shadow:0 24px 70px rgba(0,0,0,0.45);
+  }
+  .modal-panel.admin-panel{max-width:760px;}
+  .modal-close{
+    position:absolute; top:16px; right:16px;
+    width:34px; height:34px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%;
+    background:var(--paper-dim);
+    color:var(--ink);
+    font-family:'JetBrains Mono',monospace;
+    font-size:1.1rem;
+    line-height:1;
+    border:none;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .modal-close:hover{background:var(--nozzle); color:var(--paper);}
+  .modal-panel .kicker{color:var(--teal);}
+  .modal-panel .kicker::before{background:var(--teal);}
+  .modal-panel h2{font-size:clamp(1.4rem,3vw,1.9rem); max-width:88%; margin-top:8px;}
+  .modal-panel p.lede-sm{margin-top:10px; font-size:0.92rem; color:#3c3630;}
+  .modal-panel form{display:flex; flex-direction:column; gap:14px; margin-top:22px;}
+  .modal-panel label{
+    display:flex; flex-direction:column; gap:6px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem; letter-spacing:0.03em; text-transform:uppercase;
+    color:var(--blueprint);
+  }
+  .modal-panel input, .modal-panel textarea{
+    font-family:'Inter',sans-serif;
+    font-size:0.95rem;
+    padding:10px 12px;
+    border:1.5px solid var(--ink);
+    border-radius:4px;
+    background:var(--paper);
+    color:var(--ink);
+    resize:vertical;
+  }
+  .modal-panel input:focus, .modal-panel textarea:focus{outline:2px solid var(--nozzle); outline-offset:1px;}
+  .modal-panel .btn{width:100%; justify-content:center; border:none;}
+  #orderConfirm{
+    margin-top:18px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.88rem;
+    color:#0f8f7f;
+    font-weight:700;
+  }
+  #adminLoginError{
+    margin-top:12px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.8rem;
+    color:var(--nozzle-dark);
+  }
+  .admin-badge{
+    display:inline-flex;
+    background:var(--nozzle);
+    color:var(--paper);
+    font-size:0.65rem;
+    padding:1px 7px;
+    border-radius:999px;
+    margin-left:6px;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+  }
+  .admin-toolbar{display:flex; justify-content:space-between; align-items:center; margin:20px 0 6px; flex-wrap:wrap; gap:10px;}
+  .admin-toolbar .btn{width:auto; padding:9px 16px;}
+  .order-row{
+    border:1.5px solid var(--ink);
+    border-radius:6px;
+    padding:14px 16px;
+    margin-bottom:12px;
+    display:flex; justify-content:space-between; gap:12px;
+    align-items:flex-start; flex-wrap:wrap;
+    background:var(--paper);
+  }
+  .order-row.fulfilled{opacity:0.5;}
+  .order-row h4{font-family:'Big Shoulders Display',sans-serif; font-size:1.05rem; text-transform:uppercase; margin:0;}
+  .order-row .order-meta{font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:#7a6f5c; margin-top:6px; line-height:1.6;}
+  .order-row .order-notes{font-size:0.85rem; color:#3c3630; margin-top:6px; max-width:44ch;}
+  .order-row .order-actions{display:flex; gap:8px; flex-shrink:0;}
+  .order-row .order-actions button{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.66rem; font-weight:700; text-transform:uppercase;
+    padding:7px 11px; border-radius:3px;
+    border:1.5px solid var(--ink);
+    background:var(--paper);
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .order-row .order-actions button:hover{background:var(--ink); color:var(--paper);}
+  .order-row .order-actions button.danger:hover{background:var(--nozzle-dark); border-color:var(--nozzle-dark);}
+  .admin-empty{font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:#7a6f5c; padding:24px 0;}
+
+  /* ---------- footer ---------- */
+  footer{
+    background:var(--blueprint-deep);
+    color:#93aabb;
+    padding:44px 0 30px;
+    font-size:0.85rem;
+  }
+  footer .wrap{
+    display:flex; justify-content:space-between; align-items:center; gap:20px;
+    flex-wrap:wrap;
+  }
+  footer .brand-text{color:var(--paper);}
+  footer nav{display:flex; gap:22px; flex-wrap:wrap;}
+  footer nav a{text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:0.78rem; opacity:0.85;}
+  footer nav a:hover{opacity:1;}
+  footer .legal{
+    margin-top:24px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    opacity:0.6;
+  }
+</style>
+</head>
+<body>
+
+<a href="https://hackclub.com/"><img style="position: absolute; top: 0; left: 10px; border: 0; width: 256px; z-index: 999;" src="https://assets.hackclub.com/flag-orpheus-top.svg" alt="Hack Club"/></a>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <span class="brand-text">Printing Power</span>
+    </a>
+    <nav class="links">
+      <a href="#how">How it works</a>
+      <a href="#paths">What you build</a>
+      <a href="#redeem">Redeem</a>
+      <a href="#shop">$10 grants</a>
+      <a href="#faq">FAQ</a>
+      <a class="nav-cta" href="#start">Start building</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div>
+        <div class="eyebrow"><span class="dot"></span> A Hack Club YSWS — ship a design, we ship the parts</div>
+        <h1>Most printers arrive built.<br><span>Yours won't.</span></h1>
+        <p class="lede">Printing Power is for Hack Clubbers who want to open up the machine. Design a fully custom 3D printer from the frame up, or engineer a real upgrade — a new hot end, an AMS, a stiffer gantry — for an open-source printer. Ship the design, earn Spools, redeem them for the parts to actually build it.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://rsvp.hackclub.community/prtnpwr" target="_blank" rel="noopener noreferrer">Start your build</a>
+          <a class="btn btn-ghost" href="#shop">Get a $10 part grant</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTEXT -->
+  <section class="context">
+    <div class="wrap">
+      <blockquote>"Take a printer out of the box and it's printing in twenty minutes. It also teaches you nothing about how it prints."</blockquote>
+      <div>
+        <p style="margin:0; color:#3c3630; font-size:1.02rem;">Most Hack Clubbers who own a 3D printer have never opened it up. It arrived assembled, calibrated, and ready to go — a black box that happens to make things. Printing Power flips that: you either design the whole machine, or you crack open a real open-source one and make it genuinely better.</p>
+        <p class="fine">NO PRIOR CAD OR PRINTER EXPERIENCE REQUIRED. YOU'LL NEED IT BY THE TIME YOU SHIP.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PATHS -->
+  <section id="paths">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">What you build</div>
+        <h2>Pick your path</h2>
+        <p>Both paths ship as real, documented hardware designs. Neither one is "print a keychain."</p>
+      </div>
+      <div class="paths">
+        <div class="path-card">
+          <div class="num mono">PATH 01</div>
+          <h3>Full custom build</h3>
+          <p>Design a 3D printer from the frame up. You spec the motion system, the extruder, the electronics, the bed — and you justify every part choice, not just pick from a kit.</p>
+          <ul>
+            <li>Frame &amp; motion system (Cartesian, CoreXY, delta — your call)</li>
+            <li>Extruder &amp; hotend selection or design</li>
+            <li>Full bill of materials with reasoning</li>
+            <li>Assembled and calibrated, or a build-ready design</li>
+          </ul>
+        </div>
+        <div class="path-card">
+          <div class="num mono">PATH 02</div>
+          <h3>Open-source mod</h3>
+          <p>Take a real open-source printer and engineer a genuine upgrade. Real constraints, real tolerances, a machine that already exists that you have to design around.</p>
+          <ul>
+            <li>A new hot end (higher temp, better flow, all-metal)</li>
+            <li>An AMS — automatic multi-material system</li>
+            <li>A stiffened or upgraded gantry</li>
+            <li>Any mod that measurably improves print quality</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="steps" id="how">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">How it works</div>
+        <h2>Spec it. Design it. Ship it. Get Spools.</h2>
+        <p>Four steps, in order — each one has to exist before the next one makes sense.</p>
+      </div>
+    </div>
+    <div class="wrap" style="padding:0;">
+      <div class="step-grid">
+        <div class="step">
+          <div class="step-num mono">01</div>
+          <h3>Spec it</h3>
+          <p>Pick full-build or mod. Write down what you're actually solving — a printer that doesn't exist yet, or a real limitation on one that does.</p>
+        </div>
+        <div class="step">
+          <div class="step-num mono">02</div>
+          <h3>Design it</h3>
+          <p>CAD, a bill of materials, and the calculations behind your choices. Show your work — the reasoning matters as much as the model.</p>
+        </div>
+        <div class="step">
+          <div class="step-num mono">03</div>
+          <h3>Ship it</h3>
+          <p>Submit the design and a build log. If you printed or assembled anything along the way, that's what gets you paid more.</p>
+        </div>
+        <div class="step">
+          <div class="step-num mono">04</div>
+          <h3>Get Spools</h3>
+          <p>Reviewed submissions earn Spools, scaled to scope and execution — a documented AMS earns more than a nozzle swap.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REDEEM -->
+  <section class="redeem" id="redeem">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">Redeem</div>
+        <h2>Spend Spools on parts you can actually hold</h2>
+        <p>Everything in the catalog is hardware, not merch. Rates below are examples — the final Spool economy is still being tuned.</p>
+      </div>
+      <div class="catalog">
+        <div class="item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18M8 4v16"/></svg>
+          <h4>DIY printer kit</h4>
+          <p>A full kit — frame, motion parts, electronics — to build a printer from your own design.</p>
+          <div class="price"><span class="bolt">🧵</span> ~3,000 Spools</div>
+          <button class="order-btn" data-item="DIY printer kit" data-price="~3,000 Spools">Order this</button>
+        </div>
+        <div class="item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
+          <h4>Filament spool</h4>
+          <p>PLA, PETG, or ABS — 1kg spool, your choice of color.</p>
+          <div class="price"><span class="bolt">🧵</span> ~150 Spools</div>
+          <button class="order-btn" data-item="Filament spool" data-price="~150 Spools">Order this</button>
+        </div>
+        <div class="item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3h8l3 6-7 12L4 9Z"/></svg>
+          <h4>Nozzle set</h4>
+          <p>Brass and hardened-steel nozzles across common diameters.</p>
+          <div class="price"><span class="bolt">🧵</span> ~80 Spools</div>
+          <button class="order-btn" data-item="Nozzle set" data-price="~80 Spools">Order this</button>
+        </div>
+        <div class="item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v6M12 15v6M4 12h6M14 12h6"/><circle cx="12" cy="12" r="3"/></svg>
+          <h4>Hot end upgrade</h4>
+          <p>All-metal, high-flow, or high-temp hot ends for your build.</p>
+          <div class="price"><span class="bolt">🧵</span> ~500 Spools</div>
+          <button class="order-btn" data-item="Hot end upgrade" data-price="~500 Spools">Order this</button>
+        </div>
+      </div>
+      <p class="note">EXACT SPOOL RATES ARE STILL BEING TUNED.</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">FAQ</div>
+        <h2>Before you start</h2>
+      </div>
+      <div class="faq-list">
+        <details>
+          <summary>Do I need to already own a 3D printer?</summary>
+          <p>No. You can design a full custom build without ever having touched one. If you're doing an open-source mod, it helps to have access to the printer you're modding, but a documented design based on real specs still counts.</p>
+        </details>
+        <details>
+          <summary>Do I need to know CAD already?</summary>
+          <p>No prior CAD or printer experience is required — you're expected to have it by the time you ship. Plenty of Hack Clubbers pick up Fusion 360 or FreeCAD specifically for this.</p>
+        </details>
+        <details>
+          <summary>What counts as a "real" mod?</summary>
+          <p>Something that measurably changes how the printer performs — a new hot end, a multi-material AMS, a stiffened gantry, a better cooling shroud. A cosmetic part swap doesn't count.</p>
+        </details>
+        <details>
+          <summary>Do I have to actually build the thing, or just design it?</summary>
+          <p>A design with a full bill of materials and reasoning is the minimum. If you print, assemble, or test it, that build log is what pushes your Spool payout up.</p>
+        </details>
+        <details>
+          <summary>Why "Spools"?</summary>
+          <p>Every design you ship earns Spools — named after what most of your payout turns back into. Exact redemption rates are still being tuned.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta" id="start">
+    <div class="wrap">
+      <h2>Open the machine.</h2>
+      <p>Pick a path, spec what you're building, and start designing. Your first submission is the hardest part — after that you'll know exactly what earns Spools.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#">Start your build</a>
+        <a class="btn btn-ghost" href="#how">Read the full spec</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="shop-overlay" id="shop">
+  <div class="shop-panel">
+    <a class="shop-close" href="#top" aria-label="Close shop">✕</a>
+    <div class="kicker">No Spools needed</div>
+    <h2>$10 part grants</h2>
+    <p class="lede-sm">Sometimes a build just needs one small part to keep moving. Pick a category, tell us what you're stuck on, and we'll cover up to $10 toward it — no submission required first.</p>
+    <div class="grant-grid">
+      <div class="grant-item">
+        <span class="grant-tag">Up to $10</span>
+        <h4>Filament restock</h4>
+        <p>A spool or partial spool in the material your build actually needs.</p>
+        <a class="claim" href="#">Claim this grant →</a>
+      </div>
+      <div class="grant-item">
+        <span class="grant-tag">Up to $10</span>
+        <h4>Nozzle pack</h4>
+        <p>Brass, hardened steel, or odd-size nozzles most kits don't include.</p>
+        <a class="claim" href="#">Claim this grant →</a>
+      </div>
+      <div class="grant-item">
+        <span class="grant-tag">Up to $10</span>
+        <h4>Bed adhesion</h4>
+        <p>Glue stick, painter's tape, or a small PEI sheet swatch.</p>
+        <a class="claim" href="#">Claim this grant →</a>
+      </div>
+      <div class="grant-item">
+        <span class="grant-tag">Up to $10</span>
+        <h4>Fasteners &amp; bearings</h4>
+        <p>The M3s, belts, or bearings you're missing to close out a mod.</p>
+        <a class="claim" href="#">Claim this grant →</a>
+      </div>
+      <div class="grant-item">
+        <span class="grant-tag">Up to $10</span>
+        <h4>Small tools</h4>
+        <p>Calipers, hex keys, or a deburring tool for finishing parts.</p>
+        <a class="claim" href="#">Claim this grant →</a>
+      </div>
+      <div class="grant-item">
+        <span class="grant-tag">Up to $10</span>
+        <h4>Cooling &amp; wiring</h4>
+        <p>A fan, heatsink, or a handful of connectors and wire.</p>
+        <a class="claim" href="#">Claim this grant →</a>
+      </div>
+    </div>
+    <p class="note">ONE GRANT PER BUILD. MEANT TO UNBLOCK PROGRESS, NOT REPLACE THE SPOOL ECONOMY.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <span class="brand-text mono" style="font-family:'Big Shoulders Display',sans-serif; font-size:1.1rem; text-transform:uppercase;">Printing Power</span>
+      <div style="margin-top:6px; opacity:0.7; font-size:0.8rem;">A Hack Club YSWS</div>
+    </div>
+    <nav>
+      <a href="#how">How it works</a>
+      <a href="#paths">What you build</a>
+      <a href="#redeem">Redeem</a>
+      <a href="#shop">$10 grants</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://hackclub.com">Hack Club</a>
+      <a href="#" id="adminOpenLink">Admin<span class="admin-badge" id="adminBadge" style="display:none;"></span></a>
+    </nav>
+  </div>
+  <div class="wrap legal">YOU SHIP, WE SHIP. DESIGN A PRINTER OR A MOD, EARN SPOOLS, REDEEM FOR REAL PARTS.</div>
+</footer>
+
+<!-- ORDER MODAL -->
+<div class="modal-overlay" id="orderOverlay">
+  <div class="modal-panel">
+    <button class="modal-close" id="orderClose" aria-label="Close order form" type="button">✕</button>
+    <div class="kicker">Redeem</div>
+    <h2 id="orderTitle">Order item</h2>
+    <p class="lede-sm" id="orderPrice"></p>
+    <form id="orderForm">
+      <label>Your name
+        <input type="text" name="name" required placeholder="Ada Lovelace">
+      </label>
+      <label>Email or Slack handle
+        <input type="text" name="contact" required placeholder="ada@hackclub.com or @ada">
+      </label>
+      <label>Quantity
+        <input type="number" name="qty" min="1" value="1" required>
+      </label>
+      <label>Notes (optional)
+        <textarea name="notes" rows="3" placeholder="Shipping address, color preference, etc."></textarea>
+      </label>
+      <button type="submit" class="btn btn-primary">Submit order</button>
+    </form>
+    <p id="orderConfirm" style="display:none;">✅ Order submitted! We'll be in touch.</p>
+  </div>
+</div>
+
+<!-- ADMIN MODAL -->
+<div class="modal-overlay" id="adminOverlay">
+  <div class="modal-panel admin-panel">
+    <button class="modal-close" id="adminClose" aria-label="Close admin panel" type="button">✕</button>
+
+    <div id="adminLoginView">
+      <div class="kicker">Admin</div>
+      <h2>Enter password</h2>
+      <p class="lede-sm">This panel is locked. Enter the admin password to view incoming orders.</p>
+      <form id="adminLoginForm">
+        <label>Password
+          <input type="password" id="adminPasswordInput" required placeholder="••••••••">
+        </label>
+        <button type="submit" class="btn btn-primary">Unlock</button>
+      </form>
+      <p id="adminLoginError" style="display:none;">Incorrect password. Try again.</p>
+    </div>
+
+    <div id="adminPanelView" style="display:none;">
+      <div class="kicker">Admin panel</div>
+      <h2>Incoming orders</h2>
+      <div class="admin-toolbar">
+        <span class="lede-sm" style="margin:0;" id="adminOrderCount"></span>
+        <button class="btn btn-ghost" id="adminLogout" type="button" style="color:var(--blueprint); border-color:var(--ink);">Lock panel</button>
+      </div>
+      <div id="adminOrdersList"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var ADMIN_PASSWORD = "HACK321";
+  var STORAGE_KEY = "pp_orders";
+  var adminUnlocked = false;
+  var pendingItem = null;
+
+  function getOrders(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){ return []; }
+  }
+  function saveOrders(orders){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+  }
+
+  /* ---------- order modal ---------- */
+  var orderOverlay = document.getElementById('orderOverlay');
+  var orderTitle = document.getElementById('orderTitle');
+  var orderPrice = document.getElementById('orderPrice');
+  var orderForm = document.getElementById('orderForm');
+  var orderConfirm = document.getElementById('orderConfirm');
+
+  function openOrderModal(itemName, itemPrice){
+    pendingItem = { name: itemName, price: itemPrice };
+    orderTitle.textContent = itemName;
+    orderPrice.textContent = "Cost: " + itemPrice;
+    orderForm.reset();
+    orderForm.style.display = '';
+    orderConfirm.style.display = 'none';
+    orderOverlay.classList.add('open');
+  }
+  function closeOrderModal(){
+    orderOverlay.classList.remove('open');
+  }
+
+  document.querySelectorAll('.order-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      openOrderModal(btn.getAttribute('data-item'), btn.getAttribute('data-price'));
+    });
+  });
+  document.getElementById('orderClose').addEventListener('click', closeOrderModal);
+  orderOverlay.addEventListener('click', function(e){
+    if(e.target === orderOverlay) closeOrderModal();
+  });
+
+  orderForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var fd = new FormData(orderForm);
+    var order = {
+      id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+      item: pendingItem ? pendingItem.name : 'Unknown item',
+      price: pendingItem ? pendingItem.price : '',
+      name: fd.get('name'),
+      contact: fd.get('contact'),
+      qty: fd.get('qty'),
+      notes: fd.get('notes'),
+      status: 'pending',
+      date: new Date().toISOString()
+    };
+    var orders = getOrders();
+    orders.unshift(order);
+    saveOrders(orders);
+
+    orderForm.style.display = 'none';
+    orderConfirm.style.display = 'block';
+    refreshAdminBadge();
+
+    setTimeout(closeOrderModal, 1600);
+  });
+
+  /* ---------- admin modal ---------- */
+  var adminOverlay = document.getElementById('adminOverlay');
+  var adminLoginView = document.getElementById('adminLoginView');
+  var adminPanelView = document.getElementById('adminPanelView');
+  var adminLoginForm = document.getElementById('adminLoginForm');
+  var adminPasswordInput = document.getElementById('adminPasswordInput');
+  var adminLoginError = document.getElementById('adminLoginError');
+  var adminOrdersList = document.getElementById('adminOrdersList');
+  var adminOrderCount = document.getElementById('adminOrderCount');
+  var adminBadge = document.getElementById('adminBadge');
+
+  function refreshAdminBadge(){
+    var orders = getOrders();
+    var pending = orders.filter(function(o){ return o.status !== 'fulfilled'; }).length;
+    if(pending > 0){
+      adminBadge.style.display = '';
+      adminBadge.textContent = pending;
+    } else {
+      adminBadge.style.display = 'none';
+    }
+  }
+
+  function renderAdminOrders(){
+    var orders = getOrders();
+    adminOrderCount.textContent = orders.length + ' total order' + (orders.length === 1 ? '' : 's');
+    if(orders.length === 0){
+      adminOrdersList.innerHTML = '<p class="admin-empty">No orders yet. Once someone orders a catalog item, it\'ll show up here.</p>';
+      return;
+    }
+    adminOrdersList.innerHTML = '';
+    orders.forEach(function(o){
+      var row = document.createElement('div');
+      row.className = 'order-row' + (o.status === 'fulfilled' ? ' fulfilled' : '');
+
+      var left = document.createElement('div');
+      var dateStr = new Date(o.date).toLocaleString();
+      left.innerHTML =
+        '<h4>' + escapeHtml(o.item) + ' — qty ' + escapeHtml(String(o.qty || 1)) + '</h4>' +
+        '<div class="order-meta">' +
+          escapeHtml(o.name) + ' · ' + escapeHtml(o.contact) + '<br>' +
+          escapeHtml(o.price || '') + ' · ' + dateStr + ' · status: ' + escapeHtml(o.status) +
+        '</div>' +
+        (o.notes ? '<div class="order-notes">' + escapeHtml(o.notes) + '</div>' : '');
+
+      var actions = document.createElement('div');
+      actions.className = 'order-actions';
+
+      var toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.textContent = o.status === 'fulfilled' ? 'Mark pending' : 'Mark fulfilled';
+      toggleBtn.addEventListener('click', function(){
+        var all = getOrders();
+        var target = all.find(function(x){ return x.id === o.id; });
+        if(target){
+          target.status = target.status === 'fulfilled' ? 'pending' : 'fulfilled';
+          saveOrders(all);
+          renderAdminOrders();
+          refreshAdminBadge();
+        }
+      });
+
+      var delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.className = 'danger';
+      delBtn.textContent = 'Delete';
+      delBtn.addEventListener('click', function(){
+        var all = getOrders().filter(function(x){ return x.id !== o.id; });
+        saveOrders(all);
+        renderAdminOrders();
+        refreshAdminBadge();
+      });
+
+      actions.appendChild(toggleBtn);
+      actions.appendChild(delBtn);
+      row.appendChild(left);
+      row.appendChild(actions);
+      adminOrdersList.appendChild(row);
+    });
+  }
+
+  function escapeHtml(str){
+    return String(str == null ? '' : str).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function openAdminModal(){
+    adminOverlay.classList.add('open');
+    if(adminUnlocked){
+      showAdminPanel();
+    } else {
+      adminLoginView.style.display = '';
+      adminPanelView.style.display = 'none';
+      adminLoginError.style.display = 'none';
+      adminPasswordInput.value = '';
+      setTimeout(function(){ adminPasswordInput.focus(); }, 50);
+    }
+  }
+  function closeAdminModal(){
+    adminOverlay.classList.remove('open');
+  }
+  function showAdminPanel(){
+    adminUnlocked = true;
+    adminLoginView.style.display = 'none';
+    adminPanelView.style.display = '';
+    renderAdminOrders();
+  }
+
+  document.getElementById('adminOpenLink').addEventListener('click', function(e){
+    e.preventDefault();
+    openAdminModal();
+  });
+  document.getElementById('adminClose').addEventListener('click', closeAdminModal);
+  adminOverlay.addEventListener('click', function(e){
+    if(e.target === adminOverlay) closeAdminModal();
+  });
+
+  adminLoginForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(adminPasswordInput.value === ADMIN_PASSWORD){
+      showAdminPanel();
+    } else {
+      adminLoginError.style.display = 'block';
+      adminPasswordInput.value = '';
+      adminPasswordInput.focus();
+    }
+  });
+
+  document.getElementById('adminLogout').addEventListener('click', function(){
+    adminUnlocked = false;
+    adminLoginView.style.display = '';
+    adminPanelView.style.display = 'none';
+    adminLoginError.style.display = 'none';
+    adminPasswordInput.value = '';
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      closeOrderModal();
+      closeAdminModal();
+    }
+  });
+
+  refreshAdminBadge();
+})();
+</script>
+
+</body>
+</html>
