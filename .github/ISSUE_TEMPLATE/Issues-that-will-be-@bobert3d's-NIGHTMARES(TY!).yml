@@ -1,0 +1,74 @@
+name: Bug Report
+description: File a bug report. Or make me cry....
+title: "[Bug]: "
+labels: ["bug", "triage"]
+projects: ["print-n-power"]
+assignees:
+  - bobert3d
+type: bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! and making my life harder! ty!!!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: never plz ty! slack!???
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+      value: "A bug happened!"
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: What version of our software are you running?
+      options:
+        -v5.0.x
+        -v5.a.x
+        -v5.b.x
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: area seem
+    attributes:
+      label: What browsers are you seeing the problem on?
+      multiple: true
+      options:
+        - slack
+        - main website
+        - form
+        - all others
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://hackclub.com/conduct),
+      [Privacy Policy & Terms](https://hackclub.com/privacy-and-terms), and our [Safeguarding Policy](https://hackclub.com/safeguarding)
+      
+        - label: I agree to follow this project's Code of Conduct, Privacy Policy & Terms, and our Safeguarding Policy.
+          required: true
+  - type: upload
+    id: screenshots
+    attributes:
+      label: Upload screenshots
+      description: If applicable, add screenshots to help explain your problem.
+    validations:
+      required: false
