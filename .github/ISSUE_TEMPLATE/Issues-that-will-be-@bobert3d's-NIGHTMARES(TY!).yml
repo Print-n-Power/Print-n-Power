@@ -60,9 +60,7 @@ body:
     id: terms
     attributes:
       label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://hackclub.com/conduct),
-      [Privacy Policy & Terms](https://hackclub.com/privacy-and-terms), and our [Safeguarding Policy](https://hackclub.com/safeguarding)
-      
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://hackclub.com/conduct), [Privacy Policy & Terms](https://hackclub.com/privacy-and-terms), and our [Safeguarding Policy](https://hackclub.com/safeguarding)
         - label: I agree to follow this project's Code of Conduct, Privacy Policy & Terms, and our Safeguarding Policy.
           required: true
   - type: upload
